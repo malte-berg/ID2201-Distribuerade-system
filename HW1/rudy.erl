@@ -51,6 +51,9 @@ request(Client) ->
     gen_tcp:close(Client).
 
 reply({{get, URI, _}, _, _}) ->
+    % -- Task 3 Start --
+    timer:sleep(40),
+    % -- Task 3 End --
     % -- Task 2.1 Start -- 
     http:ok(URI).
     % -- Task 2.1 End --

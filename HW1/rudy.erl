@@ -20,7 +20,7 @@ init(Port) ->
             gen_tcp:close(Listen),
             ok;
         {error, Error} ->
-            io:format("rudy: error: ~w~n", [Error])
+            io:format("rudy: init error: ~w~n", [Error])
     end.
 
 handler(Listen) ->
@@ -33,7 +33,7 @@ handler(Listen) ->
             % -- Task 2.2 End --
             % -- Task 2.1 End --
         {error, Error} ->
-            io:format("rudy: error: ~w~n", [Error])
+            io:format("rudy: handler error: ~w~n", [Error])
     end.
 
 request(Client) ->
@@ -46,7 +46,7 @@ request(Client) ->
             Response = reply(Request),
             gen_tcp:send(Client, Response);
         {error, Error} ->
-            io:format("rudy: error: ~w~n", [Error])
+            io:format("rudy: request error: ~w~n", [Error])
     end,
     gen_tcp:close(Client).
 

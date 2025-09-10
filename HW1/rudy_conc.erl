@@ -5,7 +5,7 @@ start(Port, Proc) ->
     register(rudy, spawn(fun() -> init(Port, Proc) end)).
 
 stop() ->
-    whereis(rudy) ! stop, ok;
+    whereis(rudy) ! stop, ok.
 
 init(Port, Proc) ->
     Opt = [list, {active, false}, {reuseaddr, true}],

@@ -29,6 +29,9 @@ handler(Listen) ->
             % -- Task 2.1 Start --
             request(Client),
             % -- Task 2.2 Start --
+            % -- 4.1 --
+            % spawn(fun() -> request(Client) end),
+            % ---------
             handler(Listen);
             % -- Task 2.2 End --
             % -- Task 2.1 End --

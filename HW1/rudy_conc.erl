@@ -2,10 +2,10 @@
 -export([init/2, start/2, stop/0]).
 
 start(Port, Proc) ->
-    register(rudy, spawn(fun() -> init(Port, Proc) end)).
+    register(rudy_conc, spawn(fun() -> init(Port, Proc) end)).
 
 stop() ->
-    whereis(rudy) ! stop, ok.
+    whereis(rudy_conc) ! stop, ok.
 
 init(Port, Proc) ->
     Opt = [list, {active, false}, {reuseaddr, true}],

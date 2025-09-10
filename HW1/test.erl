@@ -11,12 +11,27 @@ bench(Host, Port) ->
 
 % -- Run multiple benchmark processes --
 
-bench(_, _, 0) -> 
-    io:fwrite("Spawned!~n"),
-    ok;
 bench(Host, Port, Clients) ->
-    spawn(fun() -> bench(Host, Port) end),
-    bench(Host, Port, Clients-1).
+    Start = erlang:system_time(micro_seconds),
+    spawn_runners(Host, Port, Clients, self()), % self() for message passing
+    await_finished_runs(Clients),
+    Finish = erlang:system_time(micro_seconds),
+    io:format("~w~n", [Finish - Start]).
+
+spawn_runners(_, _, 0, _) ->
+    ok;
+spawn_runners(Host, Port, Clients, Proc) ->
+    spawn(fun() -> run(100, Host, Port), Proc ! finished end), % sends message when finished
+    spawn_runners(Host, Port, Clients-1, Proc).
+
+await_finished_runs(0) ->
+    ok;
+await_finished_runs(Clients) ->
+    receive
+        finished ->
+            await_finished_runs(Clients-1) % a process has finished
+    end.
+% ----------------------------------------
 
 run(N, Host, Port) ->
     if 

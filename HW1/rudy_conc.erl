@@ -1,4 +1,4 @@
--module(rudy).
+-module(rudy_conc).
 -export([init/2, start/2, stop/0]).
 
 start(Port, Proc) ->

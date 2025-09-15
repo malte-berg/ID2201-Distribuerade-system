@@ -9,5 +9,11 @@ entry(Node, Sorted) ->
             0
     end.
 
-replace(_Node, _N, _Gateway, _Sorted) ->
-    ok.
+replace(Node, N, Gateway, Sorted) ->
+    case entry(Node, Sorted) of
+        0 ->
+            error;
+        _ ->
+            lists:sort(fun(A, B) -> entry(element(1,A), Sorted) > entry(element(1,B), Sorted) end,lists:keyreplace(Node, 1, Sorted, {Node, N, Gateway}))
+    end.
+

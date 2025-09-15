@@ -26,3 +26,11 @@ ref(Name, Intf) ->
             notfound
     end.
 
+name(Ref, Intf) ->
+    case lists:keyfind(Ref, 2, Intf) of
+        {Name, Ref, _} ->
+            {ok, Name};
+        _ ->
+            notfound
+    end.
+

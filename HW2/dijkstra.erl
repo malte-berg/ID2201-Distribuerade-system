@@ -1,5 +1,5 @@
 -module(dijkstra).
--export([entry/2, replace/4, update/4, iterate/3, table/2]).
+-export([entry/2, replace/4, update/4, iterate/3, table/2, route/2]).
 
 entry(Node, Sorted) ->
     case lists:keyfind(Node, 1, Sorted) of
@@ -44,4 +44,12 @@ table(Gateways, Map) ->
     AddGateways = fun(GatewayToAdd, GatewayAcc) -> update(GatewayToAdd, 0, GatewayToAdd, GatewayAcc) end,
     UpdatedList = lists:foldl(AddGateways, InitialList, Gateways),
     iterate(UpdatedList, Map, []).
+
+route(Node, Table) ->
+    case lists:keyfind(Node, 1, Table) of
+        {Node, Gateway} ->
+            {ok, Gateway};
+        _ ->
+            notfound
+    end.
 

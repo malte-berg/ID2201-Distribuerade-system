@@ -1,5 +1,5 @@
 -module(dijkstra).
--export([entry/2, replace/4, update/4, iterate/3, table/2, route/2]).
+-export([table/2, route/2]).
 
 entry(Node, Sorted) ->
     case lists:keyfind(Node, 1, Sorted) of

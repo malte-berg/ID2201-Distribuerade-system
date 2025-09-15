@@ -1,5 +1,5 @@
 -module(dijkstra).
--export([entry/2, replace/4, update/4, iterate/3]).
+-export([entry/2, replace/4, update/4, iterate/3, table/2]).
 
 entry(Node, Sorted) ->
     case lists:keyfind(Node, 1, Sorted) of
@@ -36,4 +36,11 @@ iterate(Sorted, Map, Table) ->
     Links = map:reachable(Node, Map),
     UpdatedSorted = lists:foldl(fun(Link, Acc) -> update(Link, N+1, Node, Acc) end, Tail, Links), % N+1 as the link is 1 away from the original node
     iterate(UpdatedSorted, Map, [{Node, Gateway} | Table]).
+
+table(Gateways, Map) ->
+    SetDummy = fun(DummyNode, DummyAcc) -> [{DummyNode, inf, unknown} | DummyAcc] end,
+    InitialList = lists:foldl(SetDummy, [], map:all_nodes(Map)),
+    AddGateways = fun(GatewayToAdd, GatewayAcc) -> [{GatewayToAdd, 0, GatewayToAdd} | GatewayAcc] end,
+    UpdatedList = lists:foldl(AddGateways, InitialList, Gateways),
+    UpdatedList.
 

@@ -9,3 +9,12 @@ add(Name, Ref, Pid, Intf) ->
 
 remove(Name, Intf) ->
     lists:keydelete(Name, 1, Intf).
+
+lookup(Name, Intf) ->
+    case lists:keyfind(Name, 1, Intf) of
+        {Name, _, Pid} ->
+            {ok, Pid};
+        _ ->
+            notfound
+    end.
+

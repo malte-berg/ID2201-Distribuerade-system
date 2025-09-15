@@ -41,7 +41,7 @@ iterate(Sorted, Map, Table) ->
 table(Gateways, Map) ->
     SetDummy = fun(DummyNode, DummyAcc) -> [{DummyNode, inf, unknown} | DummyAcc] end,
     InitialList = lists:foldl(SetDummy, [], map:all_nodes(Map)),
-    AddGateways = fun(GatewayToAdd, GatewayAcc) -> [{GatewayToAdd, 0, GatewayToAdd} | GatewayAcc] end,
+    AddGateways = fun(GatewayToAdd, GatewayAcc) -> update(GatewayToAdd, 0, GatewayToAdd, GatewayAcc) end,
     UpdatedList = lists:foldl(AddGateways, InitialList, Gateways),
     UpdatedList.
 

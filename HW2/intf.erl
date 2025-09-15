@@ -34,3 +34,6 @@ name(Ref, Intf) ->
             notfound
     end.
 
+list(Intf) ->
+    lists:foldl(fun(I, Acc) -> [element(1, I) | Acc] end, [], Intf).
+

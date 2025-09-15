@@ -1,0 +1,2 @@
+-module(hist).
+-export([new/1, update/3]).

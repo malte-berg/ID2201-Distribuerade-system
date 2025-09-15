@@ -4,7 +4,9 @@
 new() ->
     [].
 
-update(_, _, _) ->
+update(Node, Links, []) -> % If empty map
+    [{Node, Links}];
+update(_Node, _Links, _Map) -> % If map has entries
     ok.
 
 reachable(_, _) ->

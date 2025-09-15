@@ -14,6 +14,6 @@ replace(Node, N, Gateway, Sorted) ->
         0 ->
             error;
         _ ->
-            lists:sort(fun(A, B) -> entry(element(1,A), Sorted) > entry(element(1,B), Sorted) end,lists:keyreplace(Node, 1, Sorted, {Node, N, Gateway}))
+            lists:sort(fun(A, B) -> entry(element(1,A), Sorted) > entry(element(1,B), Sorted) end,lists:keyreplace(Node, 1, Sorted, {Node, N, Gateway})) % > is used, reverse logic
     end.
 

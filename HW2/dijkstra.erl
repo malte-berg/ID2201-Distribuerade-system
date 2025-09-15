@@ -14,7 +14,8 @@ replace(Node, N, Gateway, Sorted) ->
         0 ->
             Sorted;
         _ ->
-            lists:sort(fun(A, B) -> entry(element(1,A), Sorted) > entry(element(1,B), Sorted) end, lists:keyreplace(Node, 1, Sorted, {Node, N, Gateway})) % > is used, reverse logic
+            ListToSort = lists:keyreplace(Node, 1, Sorted, {Node, N, Gateway}),
+            lists:keysort(2, ListToSort)
     end.
 
 % Thanks to entry returning 0 if node not in list, case will be false if node does not exist, meaning no need for an extra check.

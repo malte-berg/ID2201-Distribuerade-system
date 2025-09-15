@@ -17,5 +17,7 @@ reachable(Node, Map) ->
             []
     end.
 
+%%% Appends every node with its links, flattens it ([[]] -> []),
+%%% and returns with all unique nodes (incl. nodes with no outgoing links)
 all_nodes(Map) ->
     lists:uniq(lists:flatten(lists:map(fun(Tuple) -> [element(1, Tuple)] ++ element(2, Tuple) end, Map))).

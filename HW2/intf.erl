@@ -18,3 +18,11 @@ lookup(Name, Intf) ->
             notfound
     end.
 
+ref(Name, Intf) ->
+    case lists:keyfind(Name, 1, Intf) of
+        {Name, Ref, _} ->
+            {ok, Ref};
+        _ ->
+            notfound
+    end.
+

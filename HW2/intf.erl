@@ -4,5 +4,6 @@
 new() ->
     [].
 
-
+add(Name, Ref, Pid, Intf) ->
+    [{Name, Ref, Pid} | Intf].
 

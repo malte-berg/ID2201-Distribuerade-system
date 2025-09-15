@@ -43,5 +43,5 @@ table(Gateways, Map) ->
     InitialList = lists:foldl(SetDummy, [], map:all_nodes(Map)),
     AddGateways = fun(GatewayToAdd, GatewayAcc) -> update(GatewayToAdd, 0, GatewayToAdd, GatewayAcc) end,
     UpdatedList = lists:foldl(AddGateways, InitialList, Gateways),
-    UpdatedList.
+    iterate(UpdatedList, Map, []).
 

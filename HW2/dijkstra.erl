@@ -12,7 +12,7 @@ entry(Node, Sorted) ->
 replace(Node, N, Gateway, Sorted) ->
     case entry(Node, Sorted) of
         0 ->
-            error;
+            Sorted;
         _ ->
             lists:sort(fun(A, B) -> entry(element(1,A), Sorted) > entry(element(1,B), Sorted) end, lists:keyreplace(Node, 1, Sorted, {Node, N, Gateway})) % > is used, reverse logic
     end.

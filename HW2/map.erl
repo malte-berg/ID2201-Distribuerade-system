@@ -9,8 +9,13 @@ update(Node, Links, []) -> % If empty map
 update(Node, Links, Map) -> % If map has entries
     lists:keyreplace(Node, 1, Map, {Node, Links}).
 
-reachable(_, _) ->
-    ok.
+reachable(Node, Map) ->
+    case lists:keyfind(Node, 1, Map) of
+        {Node, Links} ->
+            Links;
+        false ->
+            []
+    end.
 
 all_nodes(_) ->
     ok.

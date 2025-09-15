@@ -37,3 +37,7 @@ name(Ref, Intf) ->
 list(Intf) ->
     lists:foldl(fun(I, Acc) -> [element(1, I) | Acc] end, [], Intf).
 
+broadcast(Message, Intf) ->
+    SendMessage = fun(I) -> element(3, I) ! Message end,
+    lists:foreach(SendMessage, Intf).
+

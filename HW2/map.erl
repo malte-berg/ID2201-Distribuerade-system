@@ -6,8 +6,8 @@ new() ->
 
 update(Node, Links, []) -> % If empty map
     [{Node, Links}];
-update(_Node, _Links, _Map) -> % If map has entries
-    ok.
+update(Node, Links, Map) -> % If map has entries
+    lists:keyreplace(Node, 1, Map, {Node, Links}).
 
 reachable(_, _) ->
     ok.

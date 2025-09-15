@@ -7,3 +7,5 @@ new() ->
 add(Name, Ref, Pid, Intf) ->
     [{Name, Ref, Pid} | Intf].
 
+remove(Name, Intf) ->
+    lists:keydelete(Name, 1, Intf).

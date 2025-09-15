@@ -17,5 +17,5 @@ reachable(Node, Map) ->
             []
     end.
 
-all_nodes(_) ->
-    ok.
+all_nodes(Map) ->
+    lists:flatten(lists:map(fun(Tuple) -> [element(1, Tuple)] ++ element(2, Tuple) end, Map)).

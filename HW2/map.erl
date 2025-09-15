@@ -18,4 +18,4 @@ reachable(Node, Map) ->
     end.
 
 all_nodes(Map) ->
-    lists:flatten(lists:map(fun(Tuple) -> [element(1, Tuple)] ++ element(2, Tuple) end, Map)).
+    lists:uniq(lists:flatten(lists:map(fun(Tuple) -> [element(1, Tuple)] ++ element(2, Tuple) end, Map))).

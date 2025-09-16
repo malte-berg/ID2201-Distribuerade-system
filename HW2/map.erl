@@ -7,7 +7,12 @@ new() ->
 update(Node, Links, []) -> % If empty map
     [{Node, Links}];
 update(Node, Links, Map) -> % If map has entries
-    lists:keyreplace(Node, 1, Map, {Node, Links}).
+    case lists:keyfind(Node, 1, Map) of
+        {Node, _} ->
+            lists:keyreplace(Node, 1, Map, Links);
+        _ ->
+            [{Node, Links} | Map]
+    end.
 
 reachable(Node, Map) ->
     case lists:keyfind(Node, 1, Map) of

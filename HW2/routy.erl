@@ -1,5 +1,5 @@
 -module(routy).
--export([start/2, stop/1, status/1]).
+-export([start/2, stop/1]).
 
 start(Reg, Name) ->
     register(Reg, spawn(fun() -> init(Name) end)).
@@ -53,7 +53,7 @@ router(Name, N, Hist, Intf, Table, Map) ->
             router(Name, N, Hist, Intf, Table, Map);
 
         {route, To, From, Message} -> % Message to route onward
-            io:format("~w: routing message (~w)", [Name, Message]),
+            io:format("~w: routing message (~w)~n", [Name, Message]),
             case dijkstra:route(To, Table) of
                 {ok, Gateway} ->
                     case intf:lookup(Gateway, Intf) of
@@ -80,14 +80,11 @@ router(Name, N, Hist, Intf, Table, Map) ->
             intf:broadcast(Message, Intf),
             router(Name, N+1, Hist, Intf, Table, Map);
 
+        status ->
+            io:format("Name: ~w~nCounter: ~w~nMessages Received: ~w~nInterfaces: ~w~nTable: ~w~nMap: ~w~n", [Name, N, Hist, Intf, Table, Map]),
+            router(Name, N, Hist, Intf, Table, Map);
+
         stop ->
             ok
     end.
-
-    status(Node) ->
-        Node ! {status, self()},
-        receive
-            {status, {Name, N, Hist, Intf, Table, Map}} ->
-                io:format("Name: ~w~nCounter: ~w~n Messages Received: ~w~nInterfaces: ~w~nTable: ~w~nMap: ~w~n", [Name, N, Hist, Intf, Table, Map])
-        end.
 

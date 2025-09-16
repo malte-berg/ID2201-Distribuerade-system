@@ -48,6 +48,29 @@ router(Name, N, Hist, Intf, Table, Map) ->
                     router(Name, N, Hist, Intf, Table, Map)
             end;
 
+        {route, Name, _From, Message} -> % Message for us
+            io:format("~w: received message ~w~n", [Name, Message]),
+            router(Name, N, Hist, Intf, Table, Map);
+
+        {route, To, From, Message} -> % Message to route onward
+            io:format("~w: routing message (~w)", [Name, Message]),
+            case dijkstra:route(To, Table) of
+                {ok, Gateway} ->
+                    case intf:lookup(Gateway, Intf) of
+                        {ok, Pid} ->
+                            Pid ! {route, To, From, Message};
+                        notfound ->
+                            ok
+                    end;
+                notfound ->
+                    ok
+            end,
+            router(Name, N, Hist, Intf, Table, Map);
+
+        {send, To, Message} ->
+            self() ! {route, To, Name, Message},
+            router(Name, N, Hist, Intf, Table, Map);
+
         update ->
             Table1 = dijkstra:table(intf:list(Intf), Map),
             router(Name, N, Hist, Intf, Table1, Map);

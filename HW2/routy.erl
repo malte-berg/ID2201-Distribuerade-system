@@ -46,7 +46,10 @@ router(Name, N, Hist, Intf, Table, Map) ->
             ok
     end.
 
-    status(Name) ->
-        Pid = intf:lookup(Name),
-        Pid ! {from, self()}.
+    status(Node) ->
+        Node ! {status, self()},
+        receive
+            {status, {Name, N, _Hist, _Intf, _Table, _Map}} ->
+                io:format("Name: ~w~nCounter: ~w~n", [Name, N])
+        end.
 

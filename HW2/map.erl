@@ -9,7 +9,7 @@ update(Node, Links, []) -> % If empty map
 update(Node, Links, Map) -> % If map has entries
     case lists:keyfind(Node, 1, Map) of
         {Node, _} ->
-            lists:keyreplace(Node, 1, Map, Links);
+            lists:keyreplace(Node, 1, Map, {Node, Links});
         _ ->
             [{Node, Links} | Map]
     end.

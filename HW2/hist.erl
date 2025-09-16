@@ -2,7 +2,7 @@
 -export([new/1, update/3]).
 
 new(Name) ->
-    [{Name, inf}].
+    [{Name, 0}].
 
 update(Node, N, History) ->
     case lists:keyfind(Node, 1, History) of

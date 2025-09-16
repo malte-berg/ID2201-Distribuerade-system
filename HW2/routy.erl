@@ -49,7 +49,7 @@ router(Name, N, Hist, Intf, Table, Map) ->
     status(Node) ->
         Node ! {status, self()},
         receive
-            {status, {Name, N, _Hist, _Intf, _Table, _Map}} ->
-                io:format("Name: ~w~nCounter: ~w~n", [Name, N])
+            {status, {Name, N, Hist, Intf, Table, Map}} ->
+                io:format("Name: ~w~nCounter: ~w~n Messages Received: ~w~nInterfaces: ~w~nTable: ~w~nMap: ~w~n", [Name, N, Hist, Intf, Table, Map])
         end.
 

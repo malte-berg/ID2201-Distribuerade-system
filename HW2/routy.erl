@@ -1,5 +1,5 @@
 -module(routy).
--export([start/2, stop/1]).
+-export([start/2, stop/1, status/1]).
 
 start(Reg, Name) ->
     register(Reg, spawn(fun() -> init(Name) end)).
@@ -30,7 +30,7 @@ router(Name, N, Hist, Intf, Table, Map) ->
             Intf1 = intf:remove(Node, Intf),
             router(Name, N, Hist, Intf1, Table, Map);
 
-        {’DOWN’, Ref, process, _, _} ->
+        {'DOWN', Ref, process, _, _} ->
             {ok, Down} = intf:name(Ref, Intf),
             io:format("~w: exit recived from ~w~n", [Name, Down]),
             Intf1 = intf:remove(Down, Intf),
@@ -45,4 +45,8 @@ router(Name, N, Hist, Intf, Table, Map) ->
         stop ->
             ok
     end.
+
+    status(Name) ->
+        Pid = intf:lookup(Name),
+        Pid ! {from, self()}.
 

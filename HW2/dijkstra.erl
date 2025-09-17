@@ -35,7 +35,7 @@ iterate([{_, inf, _}|_], _, Table) -> % If first entry in list is of inf length
 iterate(Sorted, Map, Table) ->
     [{Node, N, Gateway} | Tail] = Sorted,
     Links = map:reachable(Node, Map),
-    UpdatedSorted = lists:foldl(fun(Link, Acc) -> update(Link, N+1, Node, Acc) end, Tail, Links), % N+1 as the link is 1 away from the original node
+    UpdatedSorted = lists:foldl(fun(Link, Acc) -> update(Link, N+1, Gateway, Acc) end, Tail, Links), % N+1 as the link is 1 away from the original node
     iterate(UpdatedSorted, Map, [{Node, Gateway} | Table]).
 
 table(Gateways, Map) ->

@@ -80,8 +80,9 @@ router(Name, N, Hist, Intf, Table, Map) ->
             intf:broadcast(Message, Intf),
             router(Name, N+1, Hist, Intf, Table, Map);
 
+        % In-loop call for showing status, for quicker debugging.
         status ->
-            io:format("Name: ~w~nCounter: ~w~nMessages Received: ~w~nInterfaces: ~w~nTable: ~w~nMap: ~w~n", [Name, N, Hist, Intf, Table, Map]),
+            io:format("Name: ~w~nCounter: ~w~nMessages Received: ~p~nInterfaces: ~p~nTable: ~p~nMap: ~p~n", [Name, N, Hist, Intf, Table, Map]),
             router(Name, N, Hist, Intf, Table, Map);
 
         stop ->
@@ -92,6 +93,6 @@ status(Node) ->
     Node ! {status, self()},
     receive
         {status, {Name, N, Hist, Intf, Table, Map}} ->
-            io:format("Name: ~w~nCounter: ~w~n Messages Received: ~w~nInterfaces: ~w~nTable: ~w~nMap: ~w~n", [Name, N, Hist, Intf, Table, Map])
+            io:format("Name: ~w~nCounter: ~w~nMessages Received: ~p~nInterfaces: ~p~nTable: ~p~nMap: ~p~n", [Name, N, Hist, Intf, Table, Map])
     end.
 

@@ -21,5 +21,5 @@ loop() ->
     end.
 
 log(From, Time, Msg) ->
-    io:format("log: ~w ~w ~p~n", [Time, Form, Msg]).
+    io:format("log: ~w ~w ~p~n", [Time, From, Msg]).
 

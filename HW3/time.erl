@@ -1,6 +1,6 @@
 -module(time).
 
--export([zero/0, inc/2, merge/2, leq/2, clock/1, update/3]).
+-export([zero/0, inc/2, merge/2, leq/2, clock/1, update/3, safe/2]).
 
 zero() ->
     0.
@@ -29,4 +29,9 @@ update(Node, Time, Clock) ->
         false ->
             Clock
     end.
+
+safe(Time, Clock) ->
+    TimesList = lists:map(fun(C) -> element(2, C) end, Clock),
+    Min = lists:min(TimesList),
+    leq(Time, Min).
 

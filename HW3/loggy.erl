@@ -24,7 +24,9 @@ loop(Nodes, Clock, Holdback) ->
     end.
 
 print_safe(Clock, Holdback) ->
-    ListOfSafe = [S || S = {_From, Time, _Msg} <:- Holdback, time:safe(Time, Clock)].
+    ListOfSafe = [S || S = {_From, Time, _Msg} <:- Holdback, time:safe(Time, Clock)],
+    SortedListOfSafe = lists:keysort(2, ListOfSafe),
+    lists:foreach(fun({From, Time, Msg}) -> log(From, Time, Msg) end, SortedListOfSafe).
 
 log(From, Time, Msg) ->
     io:format("log: ~w ~w ~p~n", [Time, From, Msg]).

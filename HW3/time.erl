@@ -31,7 +31,7 @@ update(Node, Time, Clock) ->
     end.
 
 safe(Time, Clock) ->
-    TimesList = lists:map(fun(C) -> element(2, C) end, Clock),
+    TimesList = lists:map(fun({_N, Lamport}) -> Lamport end, Clock),
     Min = lists:min(TimesList),
     leq(Time, Min).
 

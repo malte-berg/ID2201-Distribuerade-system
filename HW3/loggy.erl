@@ -1,6 +1,6 @@
 -module(loggy).
 
--export([start/1, stop/1]).
+-export([start/1, stop/1, print_safe/2]).
 
 start(Nodes) ->
     spawn_link(fun() -> init(Nodes) end).
@@ -17,16 +17,17 @@ loop(Nodes, Clock, Holdback) ->
         {log, From, Time, Msg} ->
             UpdatedClock = time:update(From, Time, Clock),
             UpdatedHoldback = [{From, Time, Msg} | Holdback],
-            print_safe(UpdatedClock, UpdatedHoldback),
-            loop(Nodes, Clock, Holdback);
+            SafeRemovedFromHoldback = print_safe(UpdatedClock, UpdatedHoldback),
+            loop(Nodes, UpdatedClock, SafeRemovedFromHoldback);
         stop ->
             ok
     end.
 
 print_safe(Clock, Holdback) ->
-    ListOfSafe = [S || S = {_From, Time, _Msg} <:- Holdback, time:safe(Time, Clock)],
+    ListOfSafe = [S || S = {_From, Time, _Msg} <- Holdback, time:safe(Time, Clock)],
     SortedListOfSafe = lists:keysort(2, ListOfSafe),
-    lists:foreach(fun({From, Time, Msg}) -> log(From, Time, Msg) end, SortedListOfSafe).
+    lists:foreach(fun({From, Time, Msg}) -> log(From, Time, Msg) end, SortedListOfSafe),
+    Holdback -- ListOfSafe.
 
 log(From, Time, Msg) ->
     io:format("log: ~w ~w ~p~n", [Time, From, Msg]).

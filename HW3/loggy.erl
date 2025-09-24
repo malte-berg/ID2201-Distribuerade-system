@@ -1,6 +1,6 @@
 -module(loggy).
 
--export([start/1, stop/1, print_safe/2]).
+-export([start/1, stop/1]).
 
 start(Nodes) ->
     spawn_link(fun() -> init(Nodes) end).

@@ -1,6 +1,6 @@
 -module(time).
 
--export([zero/0, inc/2, merge/2, leq/2, clock/1]).
+-export([zero/0, inc/2, merge/2, leq/2, clock/1, update/3]).
 
 zero() ->
     0.
@@ -16,4 +16,17 @@ leq(Ti, Tj) ->
 
 clock(Nodes) ->
     lists:foldl(fun(Node, Clock) -> [{Node, zero()} | Clock] end, [], Nodes).
+
+update(Node, Time, Clock) ->
+    case lists:keyfind(Node, 1, Clock) of
+        {Node, Lamport} ->
+            case leq(Lamport, Time) of
+                true ->
+                    lists:keyreplace(Node, 1, Clock, {Node, Time});
+                false ->
+                    Clock
+            end;
+        false ->
+            Clock
+    end.
 

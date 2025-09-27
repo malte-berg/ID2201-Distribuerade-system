@@ -1,6 +1,6 @@
 -module(gms1).
 
--export([start/1, start/2, init/1, init/2]).
+-export([start/1, start/2, init/2, init/3]).
 
 start(Id) ->
     Self = self(),
@@ -54,7 +54,7 @@ slave(Id, Master, Leader, Slaves, Group) ->
             Master ! Msg,
             slave(Id, Master, Leader, Slaves, Group);
         {view, [Leader | Slaves2], Group2} ->
-            Master ! {view, Group2}
+            Master ! {view, Group2},
             slave(Id, Master, Leader, Slaves2, Group2);
         stop ->
             ok

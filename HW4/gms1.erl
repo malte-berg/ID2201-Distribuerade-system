@@ -2,6 +2,26 @@
 
 -compile(export_all).
 
+start(Id) ->
+    Self = self(),
+    {ok, spawn_link(fun() -> init(Id, Self) end)}.
+
+init(Id, Master) ->
+    leader(Id, Master, [], [Master]).
+
+start(Id, Grp) ->
+    Self = self(),
+    {ok, spawn_link(fun() -> init(Id, Grp, Self) end)}.
+
+init(Id, Grp, Master) ->
+    Self = self(),
+    Grp ! {join, Master, Self},
+    receive
+        {view, [Leader | Slaves], Group} ->
+            Master ! {view, Group},
+            slave(Id, Master, Leader, Slaves, Group)
+    end.
+
 leader(Id, Master, Slaves, Group) ->
     receive
         {mcast, Msg} ->

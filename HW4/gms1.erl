@@ -1,6 +1,6 @@
 -module(gms1).
 
--compile(export_all).
+-export([start/1, start/2, init/1, init/2]).
 
 start(Id) ->
     Self = self(),

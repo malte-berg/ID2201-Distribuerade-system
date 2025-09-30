@@ -6,17 +6,21 @@
 -define(arghh, 100).
 
 start(Id) ->
+    Rnd = random:uniform(1000),
     Self = self(),
-    {ok, spawn_link(fun() -> init(Id, Self) end)}.
+    {ok, spawn_link(fun() -> init(Id, Rnd, Self) end)}.
 
-init(Id, Master) ->
+init(Id, Rnd, Master) ->
+    random:seed(Rnd, Rnd, Rnd),
     leader(Id, Master, [], [Master]).
 
 start(Id, Grp) ->
+    Rnd = random:uniform(1000),
     Self = self(),
-    {ok, spawn_link(fun() -> init(Id, Grp, Self) end)}.
+    {ok, spawn_link(fun() -> init(Id, Rnd, Grp, Self) end)}.
 
-init(Id, Grp, Master) ->
+init(Id, Rnd, Grp, Master) ->
+    random:seed(Rnd, Rnd, Rnd),
     Self = self(),
     Grp ! {join, Master, Self},
     receive

@@ -52,11 +52,12 @@ bcast(Id, Msg, Nodes) ->
     lists:foreach(fun(Node) -> Node ! Msg, crash(Id) end, Nodes).
 
 crash(Id) ->
-    case random:unifrom(?arghh) of
+    case random:uniform(?arghh) of
         ?arghh ->
             io:format("leader ~w: crash~n", [Id]),
             exit(no_luck);
-        _ -> ok
+        _ -> 
+            ok
     end.
 
 slave(Id, Master, Leader, Slaves, Group) ->

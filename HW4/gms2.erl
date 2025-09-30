@@ -3,6 +3,7 @@
 -export([start/1, start/2]).
 
 -define(timeout, 1000).
+-define(arghh, 100).
 
 start(Id) ->
     Self = self(),
@@ -43,9 +44,16 @@ leader(Id, Master, Slaves, Group) ->
             ok
     end.
 
-bcast(_Id, Msg, Slaves) ->
-    Bcast = fun(Slave) -> Slave ! Msg end,
-    lists:foreach(Bcast, Slaves).
+bcast(Id, Msg, Nodes) ->
+    lists:foreach(fun(Node) -> Node ! Msg, crash(Id) end, Nodes).
+
+crash(Id) ->
+    case random:unifrom(?arghh) of
+        ?arghh ->
+            io:format("leader ~w: crash~n", [Id]),
+            exit(no_luck);
+        _ -> ok
+    end.
 
 slave(Id, Master, Leader, Slaves, Group) ->
     receive

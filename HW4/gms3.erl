@@ -3,7 +3,7 @@
 -export([start/1, start/2]).
 
 -define(timeout, 1000).
--define(arghh, 200).
+-define(arghh, 120).
 
 start(Id) ->
     Rnd = random:uniform(1000),
@@ -85,7 +85,7 @@ slave(Id, Master, Leader, N, Last, Slaves, Group) ->
             ok
     end.
 
-election(Id, Master, N, Last, Slaves, [_ | Group]) ->
+election(Id, Master, N, Last, Slaves, Group) ->
     Self = self(),
     case Slaves of
         [Self | Rest] ->

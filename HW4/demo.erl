@@ -10,6 +10,6 @@ demo() ->
     loop(3, W2).
 
 loop(N, Prev) ->
-    timer:sleep(4000),
+    timer:sleep(3000),
     New = test:add(N, gms3, Prev, 1000),
-    loop(N+1, New).
+    loop(N + 1, New).

@@ -3,7 +3,7 @@
 -export([start/1, start/2]).
 
 -define(timeout, 1000).
--define(arghh, 100).
+-define(arghh, 200).
 
 start(Id) ->
     Rnd = random:uniform(1000),
@@ -91,7 +91,7 @@ election(Id, Master, N, Last, Slaves, [_ | Group]) ->
         [Self | Rest] ->
             bcast(Id, Last, Rest),
             Master ! {view, Group},
-            leader(Id, Master, N+1, Slaves, Group);
+            leader(Id, Master, N, Slaves, Group);
         [Leader | Rest] ->
             erlang:monitor(process, Leader),
             slave(Id, Master, Leader, N, Last, Rest, Group)

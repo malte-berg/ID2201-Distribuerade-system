@@ -15,3 +15,22 @@ node(Id, Predecessor, Successor) ->
             Succ = stabilize(Pred, Id, Successor),
             node(Id, Predecessor, Succ)
     end.
+
+stabilize(Pred, Id, Successor) ->
+    {Skey, Spid} = Successor,
+    case Pred of
+        nil ->
+            ok;
+        {Id, _} ->
+            ok;
+        {Skey, _} ->
+            ok;
+        {Xkey, Xpid} ->
+            case key:between(Xkey, Id, Skey) of
+                true ->
+                    ok;
+                false ->
+                    ok
+            end
+    end.
+

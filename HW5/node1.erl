@@ -1,5 +1,7 @@
 -module(node1).
 
+-define(Stabilize, 1000).
+
 node(Id, Predecessor, Successor) ->
     receive
         {key, Qref, Peer} ->
@@ -13,7 +15,10 @@ node(Id, Predecessor, Successor) ->
             node(Id, Predecessor, Successor);
         {status, Pred} ->
             Succ = stabilize(Pred, Id, Successor),
-            node(Id, Predecessor, Succ)
+            node(Id, Predecessor, Succ);
+        stabilize ->
+            stabilize(Successor),
+            node(Id, Predecessor, Successor)
     end.
 
 stabilize(Pred, Id, Successor) ->
@@ -27,6 +32,33 @@ stabilize(Pred, Id, Successor) ->
             ok;
         {Xkey, Xpid} ->
             case key:between(Xkey, Id, Skey) of
+                true ->
+                    ok;
+                false ->
+                    ok
+            end
+    end.
+
+stabilize({_, Spid}) ->
+    Spid ! {request, self()}.
+
+schedule_stabilize() ->
+    timer:send_interval(?Stabilize, self(), stabilize).
+
+request(Peer, Predecessor) ->
+    case Predecessor of
+        nil ->
+            Peer ! {status, nil};
+        {Pkey, Ppid} ->
+            Peer ! {status, {Pkey, Ppid}}
+    end.
+
+notify({Nkey, Npid}, Id, Predecessor) ->
+    case Predecessor of
+        nil ->
+            ok;
+        {Pkey, _} ->
+            case key:between(Nkey, Pkey, Id) of
                 true ->
                     ok;
                 false ->

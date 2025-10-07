@@ -1,6 +1,34 @@
 -module(node1).
 
 -define(Stabilize, 1000).
+-define(Timeout, 10000).
+
+-export([start/1, start/2]).
+
+start(Id) ->
+    start(Id, nil).
+
+start(Id, Peer) ->
+    timer:start(),
+    spawn(fun() -> init(Id, Peer) end).
+
+init(Id, Peer) ->
+    Predecessor = nil,
+    {ok, Successor} = connect(Id, Peer),
+    schedule_stabilize(),
+    node(Id, Predecessor, Successor).
+
+connect(Id, nil) ->
+    {ok, {Id, self()}};
+connect(Id, Peer) ->
+    Qref = make_ref(),
+    Peer ! {key, Qref, self()},
+    receive
+        {Qref, Skey} ->
+            {ok, {Skey, Peer}}
+    after ?Timeout ->
+              io:format("Time out: no response~n", [])
+    end.
 
 node(Id, Predecessor, Successor) ->
     receive
@@ -18,6 +46,15 @@ node(Id, Predecessor, Successor) ->
             node(Id, Predecessor, Succ);
         stabilize ->
             stabilize(Successor),
+            node(Id, Predecessor, Successor);
+        probe ->
+            create_probe(Id, Successor),
+            node(Id, Predecessor, Successor);
+        {probe, Id, Nodes, T} ->
+            remove_probe(T, Nodes),
+            node(Id, Predecessor, Successor);
+        {probe, Ref, Nodes, T} ->
+            forward_probe(Ref, T, Nodes, Id, Successor),
             node(Id, Predecessor, Successor)
     end.
 
@@ -25,20 +62,21 @@ stabilize(Pred, Id, Successor) ->
     {Skey, Spid} = Successor,
     case Pred of
         nil ->
-            {_, Ppid} = Pred,
-            Ppid ! {notify, {Id, self()}};
+            Spid ! {notify, {Id, self()}},
+            Successor;
         {Id, _} ->
-            ok;
+            Successor;
         {Skey, _} ->
-            {_, Ppid} = Pred,
-            Ppid ! {notify, {Id, self()}};
+            Spid ! {notify, {Id, self()}},
+            Successor;
         {Xkey, Xpid} ->
             case key:between(Xkey, Id, Skey) of
                 true ->
                     Xpid ! {notify, {Id, self()}},
-                    stabilize(Pred, Id, {Xkey, Xpid});
+                    {Xkey, Xpid};
                 false ->
-                    Spid ! {notify, {Id, self()}}
+                    Spid ! {notify, {Id, self()}},
+                    Successor
             end
     end.
 
@@ -59,13 +97,28 @@ request(Peer, Predecessor) ->
 notify({Nkey, Npid}, Id, Predecessor) ->
     case Predecessor of
         nil ->
-            ok;
+            {Nkey, Npid};
         {Pkey, _} ->
             case key:between(Nkey, Pkey, Id) of
                 true ->
-                    ok;
+                    {Nkey, Npid};
                 false ->
-                    ok
+                    Predecessor
             end
     end.
+
+create_probe(Id, Successor) ->
+    {_, Spid} = Successor,
+    Nodes = [Id],
+
+    Time = erlang:system_time(micro_seconds),
+    Spid ! {probe, Id, Nodes, Time}.
+
+remove_probe(Time, Nodes) ->
+    Finish = erlang:system_time(micro_seconds),
+    io:format("Finished a lap in ~w micro seconds.~nNodes: ~p~n", [Finish - Time, Nodes]).
+
+forward_probe(Ref, T, Nodes, Id, Successor) ->
+    {_, Spid} = Successor,
+    Spid ! {probe, Ref, [Id | Nodes], T}.
 

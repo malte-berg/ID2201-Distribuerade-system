@@ -3,6 +3,10 @@
 -export([generate/0, between/3]).
 
 generate() ->
+    % From erlang docs
+    random:seed(erlang:phash2([node()]),
+            erlang:monotonic_time(),
+            erlang:unique_integer()),
     random:uniform(1_000_000_000).
 
 between(_Key, N, N) ->

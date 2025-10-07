@@ -25,17 +25,20 @@ stabilize(Pred, Id, Successor) ->
     {Skey, Spid} = Successor,
     case Pred of
         nil ->
-            ok;
+            {_, Ppid} = Pred,
+            Ppid ! {notify, {Id, self()}};
         {Id, _} ->
             ok;
         {Skey, _} ->
-            ok;
+            {_, Ppid} = Pred,
+            Ppid ! {notify, {Id, self()}};
         {Xkey, Xpid} ->
             case key:between(Xkey, Id, Skey) of
                 true ->
-                    ok;
+                    Xpid ! {notify, {Id, self()}},
+                    stabilize(Pred, Id, {Xkey, Xpid});
                 false ->
-                    ok
+                    Spid ! {notify, {Id, self()}}
             end
     end.
 

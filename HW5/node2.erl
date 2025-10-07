@@ -139,3 +139,13 @@ add(Key, Value, Qref, Client, Id, {Pkey, _}, {_, Spid}, Store) ->
             Spid ! {add, Key, Value, Qref, Client}
     end.
 
+lookup(Key, Qref, Client, Id, {Pkey, _}, Successor, Store) ->
+    case key:between(Key, Pkey, Id) of
+        true ->
+            Result = storage:lookup(Key, Store),
+            Client ! {Qref, Result};
+        false ->
+            {_, Spid} = Successor,
+            Spid ! {lookup, Key, Qref, Client}
+    end.
+

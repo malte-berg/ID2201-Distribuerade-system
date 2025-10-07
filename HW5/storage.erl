@@ -1,17 +1,18 @@
 -module(storage).
 
 create() ->
-    ok.
+    [].
 
 add(Key, Value, Store) ->
-    ok.
+    [{Key, Value} | Store].
 
 lookup(Key, Store) ->
-    ok.
+    lists:keyfind(Key, 1, Store).
 
 split(From, To, Store) ->
-    ok.
+    P = fun({Key, _}) -> Key > From andalso Key =< To end,
+    lists:partition(P, Store).
 
 merge(Entries, Store) ->
-    ok.
+    Entries ++ Store.
 

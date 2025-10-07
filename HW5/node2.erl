@@ -14,9 +14,10 @@ start(Id, Peer) ->
 
 init(Id, Peer) ->
     Predecessor = nil,
+    Store = storage:create(),
     {ok, Successor} = connect(Id, Peer),
     schedule_stabilize(),
-    node(Id, Predecessor, Successor).
+    node(Id, Predecessor, Successor, Store).
 
 connect(Id, nil) ->
     {ok, {Id, self()}};
@@ -30,32 +31,39 @@ connect(Id, Peer) ->
               io:format("Time out: no response~n", [])
     end.
 
-node(Id, Predecessor, Successor) ->
+node(Id, Predecessor, Successor, Store) ->
     receive
         {key, Qref, Peer} ->
             Peer ! {Qref, Id},
-            node(Id, Predecessor, Successor);
+            node(Id, Predecessor, Successor, Store);
         {notify, New} ->
             Pred = notify(New, Id, Predecessor),
-            node(Id, Pred, Successor);
+            node(Id, Pred, Successor, Store);
         {request, Peer} ->
             request(Peer, Predecessor),
-            node(Id, Predecessor, Successor);
+            node(Id, Predecessor, Successor, Store);
         {status, Pred} ->
             Succ = stabilize(Pred, Id, Successor),
-            node(Id, Predecessor, Succ);
+            node(Id, Predecessor, Succ, Store);
         stabilize ->
             stabilize(Successor),
-            node(Id, Predecessor, Successor);
+            node(Id, Predecessor, Successor, Store);
         probe ->
             create_probe(Id, Successor),
-            node(Id, Predecessor, Successor);
+            node(Id, Predecessor, Successor, Store);
         {probe, Id, Nodes, T} ->
             remove_probe(T, Nodes),
-            node(Id, Predecessor, Successor);
+            node(Id, Predecessor, Successor, Store);
         {probe, Ref, Nodes, T} ->
             forward_probe(Ref, T, Nodes, Id, Successor),
-            node(Id, Predecessor, Successor)
+            node(Id, Predecessor, Successor, Store);
+
+        {add, Key, Value, Qref, Client} ->
+            Added = add(Key, Value, Qref, Client, Id, Predecessor, Successor, Store),
+            node(Id, Predecessor, Successor, Added);
+        {lookup, Key, Qref, Client} ->
+            lookup(Key, Qref, Client, Id, Predecessor, Successor, Store),
+            node(Id, Predecessor, Successor, Store)
     end.
 
 stabilize(Pred, Id, Successor) ->

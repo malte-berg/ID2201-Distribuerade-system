@@ -1,5 +1,7 @@
 -module(storage).
 
+-export([create/0, add/3, lookup/2, split/3, merge/2]).
+
 create() ->
     [].
 

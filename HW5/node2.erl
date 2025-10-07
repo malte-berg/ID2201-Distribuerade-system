@@ -130,3 +130,12 @@ forward_probe(Ref, T, Nodes, Id, Successor) ->
     {_, Spid} = Successor,
     Spid ! {probe, Ref, [Id | Nodes], T}.
 
+add(Key, Value, Qref, Client, Id, {Pkey, _}, {_, Spid}, Store) ->
+    case key:between(Key, Pkey, Id) of
+        true ->
+            Client ! {Qref, ok},
+            storage:add(Key, Value, Store);
+        false ->
+            Spid ! {add, Key, Value, Qref, Client}
+    end.
+

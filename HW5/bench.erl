@@ -2,19 +2,19 @@
 
 -compile(export_all).
 
-one(N1) ->
-    Keys4K = test:keys(4000),
+one(N1, NoOfKeys) ->
+    Keys4K = test:keys(NoOfKeys),
     test:add(Keys4K, N1),
     Start = erlang:system_time(micro_seconds),
     test:check(Keys4K, N1),
     Finish = erlang:system_time(micro_seconds),
     io:format("~w~n", [Finish - Start]).
 
-four(N1) ->
-    K1 = test:keys(1000),
-    K2 = test:keys(1000),
-    K3 = test:keys(1000),
-    K4 = test:keys(1000),
+four(N1, NoOfKeys) ->
+    K1 = test:keys(NoOfKeys div 4),
+    K2 = test:keys(NoOfKeys div 4),
+    K3 = test:keys(NoOfKeys div 4),
+    K4 = test:keys(NoOfKeys div 4),
     Keys = [K1, K2, K3, K4],
     Nodes = [N1, N1, N1, N1],
     lists:foreach(fun(K) -> test:add(K, N1) end, Keys),

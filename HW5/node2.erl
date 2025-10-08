@@ -37,8 +37,8 @@ node(Id, Predecessor, Successor, Store) ->
             Peer ! {Qref, Id},
             node(Id, Predecessor, Successor, Store);
         {notify, New} ->
-            Pred = notify(New, Id, Predecessor),
-            node(Id, Pred, Successor, Store);
+            {Pred, Keep} = notify(New, Id, Predecessor, Store),
+            node(Id, Pred, Successor, Keep);
         {request, Peer} ->
             request(Peer, Predecessor),
             node(Id, Predecessor, Successor, Store);
@@ -63,7 +63,21 @@ node(Id, Predecessor, Successor, Store) ->
             node(Id, Predecessor, Successor, Added);
         {lookup, Key, Qref, Client} ->
             lookup(Key, Qref, Client, Id, Predecessor, Successor, Store),
-            node(Id, Predecessor, Successor, Store)
+            node(Id, Predecessor, Successor, Store);
+        {handover, Elements} ->
+            Merged = storage:merge(Store, Elements),
+            node(Id, Predecessor, Successor, Merged);
+
+        store ->
+            io:format("~p~n", [Store]),
+            node(Id, Predecessor, Successor, Store);
+
+        id ->
+            io:format("ID: ~w~n", [Id]),
+            node(Id, Predecessor, Successor, Store);
+
+        terminate ->
+            io:format("~w terminated.", [Id])
     end.
 
 stabilize(Pred, Id, Successor) ->
@@ -102,16 +116,18 @@ request(Peer, Predecessor) ->
             Peer ! {status, {Pkey, Ppid}}
     end.
 
-notify({Nkey, Npid}, Id, Predecessor) ->
+notify({Nkey, Npid}, Id, Predecessor, Store) ->
     case Predecessor of
         nil ->
-            {Nkey, Npid};
+            Keep = handover(Id, Store, Nkey, Npid),
+            {{Nkey, Npid}, Keep};
         {Pkey, _} ->
             case key:between(Nkey, Pkey, Id) of
                 true ->
-                    {Nkey, Npid};
+                    Keep = handover(Id, Store, Nkey, Npid),
+                    {{Nkey, Npid}, Keep};
                 false ->
-                    Predecessor
+                    {Predecessor, Store}
             end
     end.
 
@@ -136,7 +152,8 @@ add(Key, Value, Qref, Client, Id, {Pkey, _}, {_, Spid}, Store) ->
             Client ! {Qref, ok},
             storage:add(Key, Value, Store);
         false ->
-            Spid ! {add, Key, Value, Qref, Client}
+            Spid ! {add, Key, Value, Qref, Client},
+            Store
     end.
 
 lookup(Key, Qref, Client, Id, {Pkey, _}, Successor, Store) ->
@@ -148,4 +165,9 @@ lookup(Key, Qref, Client, Id, {Pkey, _}, Successor, Store) ->
             {_, Spid} = Successor,
             Spid ! {lookup, Key, Qref, Client}
     end.
+
+handover(Id, Store, Nkey, Npid) ->
+    {Rest, Keep} = storage:split(Id, Nkey, Store),
+    Npid ! {handover, Rest},
+    Keep.
 

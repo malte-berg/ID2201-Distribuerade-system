@@ -69,7 +69,7 @@ node(Id, Predecessor, Successor, Store) ->
             node(Id, Predecessor, Successor, Merged);
 
         store ->
-            io:format("~p~n", [Store]),
+            io:format("ID ~w has store: ~p~n", [Id, Store]),
             node(Id, Predecessor, Successor, Store);
 
         id ->

@@ -12,7 +12,7 @@ lookup(Key, Store) ->
     lists:keyfind(Key, 1, Store).
 
 split(From, To, Store) ->
-    P = fun({Key, _}) -> Key > From andalso Key =< To end,
+    P = fun({Key, _}) -> key:between(Key, From, To) end,
     lists:partition(P, Store).
 
 merge(Entries, Store) ->

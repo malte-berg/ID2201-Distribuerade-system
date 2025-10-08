@@ -58,8 +58,8 @@ check(Keys, P) ->
     T1 = now(),
     {Failed, Timeout} = check(Keys, P, 0, 0),
     T2 = now(),
-    Done = (timer:now_diff(T2, T1) div 1000),
-    io:format("~w lookup operation in ~w ms ~n", [length(Keys), Done]),
+    Done = (timer:now_diff(T2, T1)),
+    io:format("~w lookup operation in ~w µs ~n", [length(Keys), Done]),
     io:format("~w lookups failed, ~w caused a timeout ~n", [Failed, Timeout]).
 
 

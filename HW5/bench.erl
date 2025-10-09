@@ -35,6 +35,17 @@ two_nodes(N1, N2) ->
     Finish = erlang:system_time(micro_seconds),
     io:format("~w~n", [Finish - Start]).
 
+four_nodes(Nodes) ->
+    Keys = [test:keys(1000), test:keys(1000), test:keys(1000), test:keys(1000)],
+    [N1, _, _, _] = Nodes,
+    lists:foreach(fun(K) -> test:add(K, N1) end, Keys),
+    timer:sleep(2000),
+    Start = erlang:system_time(micro_seconds),
+    spawn_runners(Keys, Nodes, 4, self()),
+    await_finished(4),
+    Finish = erlang:system_time(micro_seconds),
+    io:format("~w~n", [Finish - Start]).
+
 spawn_runners(_, _, 0, _) ->
     ok;
 spawn_runners([Keys | Rest], [Node | Nodes], Clients, Proc) ->
